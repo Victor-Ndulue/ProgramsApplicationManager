@@ -1,4 +1,5 @@
 ﻿using Application.DataContext;
+using Application.MappingServices.MapInitializers;
 using Application.Repository.GenericRepo.IRepositoryBase;
 using Application.Repository.GenericRepo.RepositoryBase;
 using Application.Repository.ProgramServices;
@@ -31,5 +32,10 @@ public static class ServiceExtension
                         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
                         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                     }).AddXmlDataContractSerializerFormatters();
+    }
+    public static void ConfigureAutoMapper(this IServiceCollection services)
+    {
+
+        services.AddAutoMapper(typeof(MappingProfile).Assembly);
     }
 }
