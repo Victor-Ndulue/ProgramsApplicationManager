@@ -8,6 +8,8 @@ namespace Infrastructure.IProgramServices;
 public interface IProgramCommandService
 {
     Task<ResponseObject<ProgramResponseDto>> CreateProgramAsync(ProgramRequestDto programRequestDto);
-    Task<ResponseObject<string>> DeleteProgramByIdAsync(string programId);
+    Task<ResponseObject<string>> DeleteQuestionByIdAsync(string programId);
     Task<ResponseObject<ProgramResponseDto>> UpdateProgramAsync(ProgramUpdateDto programUpdateDto);
+    Task<ResponseObject<QuestionResponseDto>> UpdateQuestionAsync(QuestionUpdateDto questionUpdateDto);
+    Task<ResponseObject<CustomQuestionResponseDto>> UpdateCustomQuestionAsync(CustomQuestionUpdateDto customQuesUpdateDto);
 }

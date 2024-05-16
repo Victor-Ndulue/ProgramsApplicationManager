@@ -1,3 +1,7 @@
 ﻿namespace Common.ObjectWrappers.DTOs.Responses;
 
-public record QuestionResponseDto(string id, string? questionText);
+public record QuestionResponseDto
+{
+    public string? id { get; init; }
+    public string? questionText { get; init; }
+}

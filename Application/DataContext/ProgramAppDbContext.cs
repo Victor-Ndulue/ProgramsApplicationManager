@@ -55,7 +55,8 @@ public class ProgramAppDbContext : DbContext
         {
             customQues.HasMany(cques => cques.Choices)
             .WithOne(choice => choice.Question)
-            .HasForeignKey(choice => choice.QuestionId);
+            .HasForeignKey(choice => choice.QuestionId)
+            .OnDelete(DeleteBehavior.Cascade);
         });
         modelBuilder.Entity<Answer>(answer =>
         {

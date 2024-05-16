@@ -1,4 +1,5 @@
-﻿using Common.ObjectWrappers.DTOs.Responses;
+﻿using Common.Enums;
+using Common.ObjectWrappers.DTOs.Responses;
 using Common.ObjectWrappers.ResponseWrapper;
 using Common.PaginationDefiners;
 
@@ -8,4 +9,5 @@ public interface IProgramQueryService
 {
     Task<ResponseObject<ProgramResponseDto>> FindProgramByIdAsync(string programId);
     Task<ResponseObject<PagedList<ProgramResponseDto>>> FindAllProgramAsync(PaginationParams paginationParams);
+    Task<ResponseObject<IEnumerable<CustomQuestionResponseDto>>> GetQuestionsByQuestionType(QuestionType questionType);
 }

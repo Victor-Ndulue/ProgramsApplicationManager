@@ -15,6 +15,7 @@ public class MappingProfile : Profile
             config => config.MapFrom(progDto => progDto.questions))
             .ForMember(prog => prog.CustomQuestions,
             config => config.MapFrom(progDto => progDto.customQuestions));
+        CreateMap<Program, ProgramWithApplicationDto>();
         CreateMap<QuestionRequestDto, Question>();
         CreateMap<CustomQuestionsRequestDto, CustomQuestion>()
             .ForMember(customQues => customQues.Choices,
@@ -32,7 +33,21 @@ public class MappingProfile : Profile
         CreateMap<Choice, ChoiceResponseDto>();
         CreateMap<ProgramUpdateDto, Program>();
         CreateMap<ChoiceUpdateDto, Choice>();
-        CreateMap<CustomQuestionUpdateDto, CustomQuestion>();
+        CreateMap<CustomQuestionUpdateDto, CustomQuestion>()
+            .ForMember(customQues => customQues.Choices,
+            config => config.MapFrom(customQuesDto => customQuesDto.choices));
         CreateMap<QuestionUpdateDto, Question>();
+        CreateMap<CandidateAppRequestDto, CandidateApplication>()
+            .ForMember(app => app.Answers,
+            config => config.MapFrom(appDto => appDto.answers));
+        CreateMap<AnswerRequestDto, Answer>();
+        CreateMap<Answer, AnswerResponseDto>()
+            .ForMember(ansDto => ansDto.question,
+            config => config.MapFrom(ans => ans.Question))
+            .ForMember(ansDto => ansDto.customQuestion,
+            config => config.MapFrom(ans => ans.CustomQuestion));
+        CreateMap<CandidateApplication, CandidateAppResponseDto>()
+            .ForMember(appDto => appDto.answers,
+            config => config.MapFrom(app => app.Answers));
     }
 }
