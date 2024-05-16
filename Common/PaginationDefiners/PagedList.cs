@@ -1,4 +1,6 @@
-﻿namespace Common.PaginationDefiners
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Common.PaginationDefiners
 {
     public class PagedList<T> : List<T>
     {

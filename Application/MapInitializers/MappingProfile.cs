@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Common.ObjectWrappers.DTOs.Requests.Creation;
+using Common.ObjectWrappers.DTOs.Requests.Update;
 using Common.ObjectWrappers.DTOs.Responses;
 using Domain.Models.Entities;
 
@@ -29,5 +30,9 @@ public class MappingProfile : Profile
             config => config.MapFrom(cusQues => cusQues.Choices));
         CreateMap<ChoiceRequestDto, Choice>();
         CreateMap<Choice, ChoiceResponseDto>();
+        CreateMap<ProgramUpdateDto, Program>();
+        CreateMap<ChoiceUpdateDto, Choice>();
+        CreateMap<CustomQuestionUpdateDto, CustomQuestion>();
+        CreateMap<QuestionUpdateDto, Question>();
     }
 }

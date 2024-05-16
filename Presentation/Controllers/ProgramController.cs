@@ -35,12 +35,12 @@ public class ProgramController : BaseController
         return StatusCode(result.StatusCode, result);
     }
     [HttpGet]
-    public async Task<IActionResult> GetAllProgramsAsync(PaginationParams paginationParams)
+    public async Task<IActionResult> GetAllProgramsAsync([FromQuery]PaginationParams paginationParams)
     {
         var result = await _programQuery.FindAllProgramAsync(paginationParams);
         return StatusCode(result.StatusCode, result);
     }
-    [HttpGet, Route("get-by-id/{programId}")]
+    [HttpGet, Route("get-by-id")]
     public async Task<IActionResult> GetProgramByIdAsync([FromQuery] string programId)
     {
         var result = await _programQuery.FindProgramByIdAsync(programId);

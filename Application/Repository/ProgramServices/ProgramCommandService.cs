@@ -67,13 +67,21 @@ public sealed class ProgramCommandService : IProgramCommandService
     }
     public async Task<ResponseObject<ProgramResponseDto>> UpdateProgramAsync(ProgramUpdateDto programUpdateDto)
     {
-        var programToUpdate = await GetProgramById(programUpdateDto.id);
+        var programToUpdate = await _ProgramQuery
+            .FindByCondition(prog => prog.Id == programUpdateDto.id, trackChanges: true)
+            .Include(prog => prog.Questions)
+            .Include(prog => prog.CustomQuestions)
+            .ThenInclude(customQues => customQues.Choices)
+            .SingleOrDefaultAsync();
+
         if (programToUpdate is null)
         {
             var errorMsg = "Program not found";
             return ResponseObject<ProgramResponseDto>.FailureResponse(message: errorMsg);
         }
+
         _mapper.Map(programUpdateDto, programToUpdate);
+
         // Update Questions
         foreach (var questionDto in programUpdateDto.questions)
         {
@@ -82,61 +90,138 @@ public sealed class ProgramCommandService : IProgramCommandService
             {
                 var newQuestion = _mapper.Map<Question>(questionDto);
                 programToUpdate.Questions.Add(newQuestion);
-                //newQuestion.ProgramId = programToUpdate.Id;
-                //await _questionCommand.CreateAsync(newQuestion);
             }
             else
             {
                 _mapper.Map(questionDto, question);
             }
         }
-        /*var questionUpdate = _mapper.Map(programRequestDto.questions, programToUpdate.Questions);
-        await _questionCommand.UpdateManyAsync(questionUpdate);
-        programToUpdate.Questions = questionUpdate;*/
+
         // Update Custom Questions and Choices
-
-        if (programUpdateDto.customQuestions.Count > 0)
+        foreach (var customQuestionDto in programUpdateDto.customQuestions)
         {
-            foreach (var customQuestionDto in programUpdateDto.customQuestions)
+            var customQuestion = programToUpdate.CustomQuestions.FirstOrDefault(cq => cq.Id == customQuestionDto.id);
+            if (customQuestion is null)
             {
-                var customQuestion = programToUpdate.CustomQuestions
-                    .FirstOrDefault(cq => cq.Id == customQuestionDto.id);
-                if (customQuestion is null)
-                {
-                    var newCustomQuestion = _mapper.Map<CustomQuestion>(customQuestionDto);
-                    programToUpdate.CustomQuestions.Add(newCustomQuestion);
-                }
-                else
-                {
-                    _mapper.Map(customQuestionDto, customQuestion);
+                var newCustomQuestion = _mapper.Map<CustomQuestion>(customQuestionDto);
+                programToUpdate.CustomQuestions.Add(newCustomQuestion);
+            }
+            else
+            {
+                _mapper.Map(customQuestionDto, customQuestion);
 
-                    if (customQuestion.QuestionType == QuestionType.MultipleChoice)
+                if (customQuestion.QuestionType == QuestionType.MultipleChoice)
+                {
+                    foreach (var choiceDto in customQuestionDto.choices)
                     {
-                        foreach (var choiceDto in customQuestionDto.choices)
+                        var choice = customQuestion.Choices.FirstOrDefault(c => c.Id == choiceDto.id);
+                        if (choice is null)
                         {
-                            var choice = customQuestion.Choices.FirstOrDefault(c => c.Id == choiceDto.id);
-                            if (choice is null)
-                            {
-                                var newChoice = _mapper.Map<Choice>(choiceDto);
-                                customQuestion.Choices.Add(newChoice);
-                            }
-                            else
-                            {
-                                _mapper.Map(choiceDto, choice);
-                            }
+                            var newChoice = _mapper.Map<Choice>(choiceDto);
+                            customQuestion.Choices.Add(newChoice);
+                        }
+                        else
+                        {
+                            _mapper.Map(choiceDto, choice);
                         }
                     }
                 }
             }
         }
-        await _programCommand.SaveChangesAsync();
+
+        try
+        {
+            await _programCommand.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            // Handle concurrency exceptions if needed
+            throw;
+        }
+        catch (Exception ex)
+        {
+            // Handle other exceptions if needed
+            throw;
+        }
+
         var programResponse = _mapper.Map<ProgramResponseDto>(programToUpdate);
         return ResponseObject<ProgramResponseDto>.SuccessResponse(data: programResponse);
     }
+
+    /* public async Task<ResponseObject<ProgramResponseDto>> UpdateProgramAsync(ProgramUpdateDto programUpdateDto)
+     {
+         var programToUpdate = await _ProgramQuery
+             .FindByCondition(prog => prog.Id == programUpdateDto.id, trackChanges: true)
+             .Include(prog => prog.Questions)
+             .Include(prog => prog.CustomQuestions)
+             .ThenInclude(customQues => customQues.Choices)
+             .SingleOrDefaultAsync();
+         if (programToUpdate is null)
+         {
+             var errorMsg = "Program not found";
+             return ResponseObject<ProgramResponseDto>.FailureResponse(message: errorMsg);
+         }
+         _mapper.Map(programUpdateDto, programToUpdate);
+         // Update Questions
+         foreach (var questionDto in programUpdateDto.questions)
+         {
+             var question = programToUpdate.Questions.FirstOrDefault(q => q.Id == questionDto.id);
+             if (question is null)
+             {
+                 var newQuestion = _mapper.Map<Question>(questionDto);
+                 programToUpdate.Questions.Add(newQuestion);
+                 //newQuestion.ProgramId = programToUpdate.Id;
+                 //await _questionCommand.CreateAsync(newQuestion);
+             }
+             else
+             {
+                 _mapper.Map(questionDto, question);
+             }
+         }
+
+
+         if (programUpdateDto.customQuestions.Count > 0)
+         {
+             foreach (var customQuestionDto in programUpdateDto.customQuestions)
+             {
+                 var customQuestion = programToUpdate.CustomQuestions
+                     .FirstOrDefault(cq => cq.Id == customQuestionDto.id);
+                 if (customQuestion is null)
+                 {
+                     var newCustomQuestion = _mapper.Map<CustomQuestion>(customQuestionDto);
+                     programToUpdate.CustomQuestions.Add(newCustomQuestion);
+                 }
+                 else
+                 {
+                     _mapper.Map(customQuestionDto, customQuestion);
+
+                     if (customQuestion.QuestionType == QuestionType.MultipleChoice)
+                     {
+                         foreach (var choiceDto in customQuestionDto.choices)
+                         {
+                             var choice = customQuestion.Choices.FirstOrDefault(c => c.Id == choiceDto.id);
+                             if (choice is null)
+                             {
+                                 var newChoice = _mapper.Map<Choice>(choiceDto);
+                                 customQuestion.Choices.Add(newChoice);
+                             }
+                             else
+                             {
+                                 _mapper.Map(choiceDto, choice);
+                             }
+                         }
+                     }
+                 }
+             }
+         }
+         await _programCommand.SaveChangesAsync();
+         var programResponse = _mapper.Map<ProgramResponseDto>(programToUpdate);
+         return ResponseObject<ProgramResponseDto>.SuccessResponse(data: programResponse);
+     }*/
     private async Task<Program> GetProgramById(string programId)
     {
         return await _ProgramQuery
-            .FindByCondition(prog => prog.Id == programId, trackChanges: true)
+            .FindByCondition(prog => prog.Id == programId, trackChanges: false)
             .Include(prog => prog.Questions)
             .Include(prog => prog.CustomQuestions)
             .ThenInclude(customQues => customQues.Choices)
