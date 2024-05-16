@@ -5,7 +5,7 @@ namespace Domain.Models.Entities;
 public class Answer : BaseEntity
 {
     public CandidateApplication? CandidateApplication { get; set; }
-    public string? ApplicationId { get; set; }
+    public string? CandidateApplicationId { get; set; }
     public Question? Question { get; set; }
     public string QuestionId { get; set; }
     public CustomQuestion? CustomQuestion { get; set; }

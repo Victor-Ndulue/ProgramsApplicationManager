@@ -1,4 +1,5 @@
-﻿using Domain.Models.AuditBaseEntity;
+﻿using Common.Enums;
+using Domain.Models.AuditBaseEntity;
 
 namespace Domain.Models.Entities;
 

@@ -1,6 +1,6 @@
 ﻿using Common.Enums;
 
-namespace Common.ObjectWrappers.DTOs.Requests;
+namespace Common.ObjectWrappers.DTOs.Requests.Creation;
 
 public record CustomQuestionsRequestDto
     (

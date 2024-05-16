@@ -1,6 +1,6 @@
-﻿namespace Common.ObjectWrappers.DTOs.Requests;
+﻿namespace Common.ObjectWrappers.DTOs.Requests.Creation;
 
-public class ProgramRequestDto
+public record ProgramRequestDto
     (
     string title,
     string description,

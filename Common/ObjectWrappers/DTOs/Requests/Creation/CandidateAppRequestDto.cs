@@ -1,4 +1,4 @@
-﻿namespace Common.ObjectWrappers.DTOs.Requests;
+﻿namespace Common.ObjectWrappers.DTOs.Requests.Creation;
 
 public record CandidateAppRequestDto
     (string applicantId,
