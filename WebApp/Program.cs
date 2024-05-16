@@ -1,5 +1,8 @@
 using WebApp.Extensions;
+using WebApp.LoggerConfiguration;
+using WebApp.Middlewares;
 
+LogConfigurator.ConfigureLogger();
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -19,7 +22,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+//Injecting middleware to handle global errors 
+app.ConfigureExceptionHandler();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
